@@ -68,6 +68,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:va
 :root{--c:min(212px,46vh,58vw)}
 @media (pointer:coarse){#touch{display:block}#toast{bottom:calc(env(safe-area-inset-bottom,0px) + var(--c) + 30px)}}
 @media (max-height:460px){#touch button span{display:none}}
+/* Botones táctiles: solo visibles durante la partida (play/intro); ocultos en menús, pausa, fin y victoria */
+body:not([data-s=play]):not([data-s=intro]) #touch{display:none!important}
 @media (prefers-reduced-motion:reduce){#tSoft::after{animation:none}}
 @media (max-width:520px){.bar{width:84px}#hud .lab{width:70px}}
 @media (prefers-reduced-motion:reduce){#banner.on{animation-duration:.01s}}
