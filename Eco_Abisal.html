@@ -182,6 +182,18 @@ body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibi
 .prof dt{font:500 11px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--dim);align-self:center}
 .prof dd{margin:0;font:400 14px var(--mono);color:var(--fg);text-align:right;word-break:break-all}
 .lnk.w{color:var(--warn)}
+/* ===== Clasificación ===== */
+.lb{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line)}
+.lb li{display:grid;grid-template-columns:38px 1fr auto;gap:12px;align-items:baseline;padding:10px 6px;border-bottom:1px solid var(--line);font-size:15px}
+.lb .rk{font:500 12px var(--mono);letter-spacing:.08em;color:var(--dim)}
+.lb .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .sc{font:400 14px var(--mono);color:var(--accent)}
+.lb li:nth-child(1) .rk,.lb li:nth-child(1) .sc{color:var(--gold)}
+.lb li:nth-child(2) .rk,.lb li:nth-child(3) .rk{color:var(--fg)}
+.lb li.me{background:rgba(95,227,240,.08);box-shadow:inset 2px 0 0 var(--accent)}
+.lb li.me .nm{color:var(--fg);font-weight:600}
+.lb li.gap{display:block;padding:2px 6px;text-align:center;color:var(--dim);border-bottom:0;letter-spacing:.4em}
+.lbn{margin:0;font-size:13px;color:var(--dim)}
 </style>
 <canvas id="c" aria-label="Cueva submarina a oscuras"></canvas><div id="tut" hidden></div><div id="vig"></div>
 <div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>Gira tu dispositivo<small>Eco Abisal se juega en horizontal. Pon el móvil apaisado para continuar.</small></div>
@@ -851,17 +863,19 @@ ${it('o','Concha','Solo en el cenagal: escudo y un señuelo.')}</div></section>
 </div>`;
 const mi=(a,t,c)=>`<button class="mi ${c||''}" type="button" data-act="${a}"><i></i>${t}</button>`;
 const sl=(k,t)=>`<label for="v-${k}">${t}</label><output>${Math.round(set[k]*100)}%</output><input id="v-${k}" data-k="${k}" type="range" min="0" max="1" step=".05" value="${set[k]}">`;
-function showOverlay(kind,msg){overlay.hidden=false;overlay.dataset.kind=kind;view='main';render(kind,msg)}
+let deadMsg='';
+function showOverlay(kind,msg){deadMsg=msg||'';overlay.hidden=false;overlay.dataset.kind=kind;view='main';render(kind,msg)}
 function render(kind,msg){
+  if(msg==null)msg=deadMsg;
   let h='';
   if(view==='how')h=howHtml+mi('back','Volver','back');
   else if(view==='set')h=`<div class="sub">Ajustes</div><h2>Sonido y pantalla</h2><div class="set">${sl('master','Volumen general')}${sl('music','Música y ambiente')}${sl('sfx','Efectos')}</div><label class="chk"><input type="checkbox" data-k="calm" ${set.calm?'checked':''}>Reducir destellos y pulsos rojos</label><button class="lnk" type="button" data-act="clear">Borrar récord</button>${mi('back','Volver','back')}`;
   else if(AV[view])h=AV[view]();
-  else if(kind==='menu')h=`<h1>EC<span class="o">O</span></h1><p>Una cueva inundada, sin una gota de luz. Lanzas pulsos de sonar y la roca te devuelve su forma. Lo que vive aquí no ve, pero oye todo lo que haces.</p><nav class="menu" aria-label="Menú principal">${mi('play','Sumergirse','pri')}${mi('tut','Tutorial')}${mi('how','Cómo jugar')}${mi('set','Ajustes')}${mi(sb?(usr?'acct':'login'):'nocfg',usr&&prof?'Mi perfil':'Cuenta')}</nav>${(usr&&prof)||best?`<div class="sub">${usr&&prof?esc(prof.username)+(best?' · ':''):''}${best?'Récord: '+best*30+' m':''}</div>`:''}`;
+  else if(kind==='menu')h=`<h1>EC<span class="o">O</span></h1><p>Una cueva inundada, sin una gota de luz. Lanzas pulsos de sonar y la roca te devuelve su forma. Lo que vive aquí no ve, pero oye todo lo que haces.</p><nav class="menu" aria-label="Menú principal">${mi('play','Sumergirse','pri')}${mi('tut','Tutorial')}${mi('how','Cómo jugar')}${sb?mi('rank','Clasificación'):''}${mi('set','Ajustes')}${mi(sb?(usr?'acct':'login'):'nocfg',usr&&prof?'Mi perfil':'Cuenta')}</nav>${(usr&&prof)||best?`<div class="sub">${usr&&prof?esc(prof.username)+(best?' · ':''):''}${best?'Récord: '+best*30+' m':''}</div>`:''}`;
   else if(kind==='pause')h=`<div class="sub">En pausa</div><h2>El agua sigue quieta</h2><nav class="menu">${mi('resume','Continuar','pri')}${mi('how','Cómo jugar')}${mi('set','Ajustes')}${mi('quit','Salir al menú')}</nav>`;
-  else if(kind==='dead')h=`<div class="sub">Fin de la inmersión</div><h2>${msg}</h2><p>Llegaste a ${dive*30} m. Tu mejor marca es ${best*30} m.</p><nav class="menu">${mi('play','Volver a bajar','pri')}${mi('quit','Menú principal')}</nav>`;
+  else if(kind==='dead')h=`<div class="sub">Fin de la inmersión</div><h2>${msg}</h2><p>Llegaste a ${dive*30} m. Tu mejor marca es ${best*30} m.</p><nav class="menu">${mi('play','Volver a bajar','pri')}${sb?mi('rank','Clasificación'):''}${mi('quit','Menú principal')}</nav>`;
   else if(kind==='tutend')h=`<div class="sub">Tutorial completado</div><h2>Ya sabes lo básico</h2><p>Cristales, medusas, biomas y las demás criaturas los irás encontrando al bajar. Tienes el resumen en «Cómo jugar».</p><nav class="menu">${mi('play','Sumergirse','pri')}${mi('tut','Repetir tutorial')}${mi('how','Cómo jugar')}${mi('quit','Menú principal')}</nav>`;
-  card.className=view==='how'?'card wide':'card';card.innerHTML=h;drawIcons();const f=card.querySelector(matchMedia('(pointer:fine)').matches?'input:not([type=range]):not([type=checkbox]),.mi':'.mi');if(f)try{f.focus({preventScroll:true})}catch(e){}
+  card.className=view==='how'?'card wide':'card';card.innerHTML=h;drawIcons();if(view==='rank')loadRank();const f=card.querySelector(matchMedia('(pointer:fine)').matches?'input:not([type=range]):not([type=checkbox]),.mi':'.mi');if(f)try{f.focus({preventScroll:true})}catch(e){}
 }
 function act(a,el){
   const k=overlay.dataset.kind;
@@ -908,11 +922,31 @@ async function doDelete(el){
   if(error){delete el.dataset.c;el.textContent='No se pudo eliminar. Inténtalo de nuevo';return}
   endSession();
 }
+async function loadRank(){
+  const box=()=>view==='rank'?document.getElementById('lb'):null;
+  const put=h=>{const b=box();if(b)b.innerHTML=h};
+  if(!sb)return put('<p class="lbn">Clasificación no disponible.</p>');
+  if(cloudT){clearTimeout(cloudT);cloudT=0;if(usr&&prof){try{await sb.from('profiles').update({best,settings:set}).eq('id',usr.id)}catch(e){}}}
+  try{
+    const [top,me]=await Promise.all([sb.rpc('get_leaderboard',{lim:10}),usr?sb.rpc('get_my_rank'):Promise.resolve({data:null})]);
+    if(top.error)throw top.error;
+    const rows=top.data||[];
+    if(!rows.length)return put('<p class="lbn">Aún no hay nadie en la clasificación. ¡Sé el primero en sumergirte!</p>');
+    const li=r=>`<li class="${r.is_me?'me':''}"><span class="rk">${String(r.rank).padStart(2,'0')}</span><span class="nm">${esc(r.username)}</span><span class="sc">${r.best*30} m</span></li>`;
+    let h='<ol class="lb">'+rows.map(li).join('');
+    const m=me&&me.data&&(Array.isArray(me.data)?me.data[0]:me.data);
+    if(m&&!rows.some(r=>r.is_me))h+='<li class="gap">···</li>'+li({...m,is_me:true});
+    h+='</ol>';
+    if(!usr)h+='<p class="lbn" style="margin-top:12px">Inicia sesión para aparecer en la clasificación.</p>';
+    put(h);
+  }catch(e){put('<p class="lbn">No se pudo cargar la clasificación. Inténtalo de nuevo.</p>')}
+}
 const eTxt=e=>{const m=String(e&&e.message||e);return /invalid login/i.test(m)?'Correo o contraseña incorrectos.':/not confirmed/i.test(m)?'Confirma primero tu correo.':/already registered/i.test(m)?'Ya existe una cuenta con ese correo.':/rate limit|too many/i.test(m)?'Demasiados intentos. Espera un poco.':/network|fetch/i.test(m)?'Sin conexión con el servidor.':/same password|different from the old/i.test(m)?'La contraseña nueva debe ser distinta.':/password/i.test(m)?'Contraseña no válida (mínimo 8 caracteres).':'No se pudo completar. Inténtalo de nuevo.'};
 const note=t=>{const m=card.querySelector('.msg');if(m){m.textContent=t;m.className='msg ok'}};
 const fld=(n,l,t,ac,v)=>`<label class="fld"><span>${l}</span><input name="${n}" type="${t}" autocomplete="${ac}" ${v?`value="${esc(v)}"`:''} required></label>`;
 const nm=()=>prof?prof.username:(usr&&usr.user_metadata&&usr.user_metadata.username)||'Buceador';
 const AV={
+  rank:()=>`<div class="sub">Clasificación</div><h2>Los más profundos</h2><div id="lb"><p class="lbn">Cargando…</p></div>${mi('back','Volver','back')}`,
   nocfg:()=>`<div class="sub">Cuenta</div><h2>Cuentas no disponibles</h2><p>${SUPABASE_URL&&SUPABASE_KEY?'No se pudo cargar el servicio de cuentas. Comprueba tu conexión y recarga la página.':'Falta configurar Supabase: pon tu URL y tu clave anon en SUPABASE_URL y SUPABASE_KEY, al inicio del script.'}</p>${mi('back','Volver','back')}`,
   login:()=>`<div class="sub">Cuenta</div><h2>Identifícate</h2><p>Guarda tus ajustes y tu récord de profundidad y llévalos a cualquier dispositivo.</p><div class="acc"><form data-f="login">${fld('email','Correo','email','email')}${fld('password','Contraseña','password','current-password')}<p class="msg"></p><button class="mi pri" type="submit"><i></i>Entrar</button></form><nav class="menu">${mi('signup','Crear una cuenta')}${mi('forgot','Olvidé mi contraseña')}</nav></div>${mi('back','Volver','back')}`,
   signup:()=>`<div class="sub">Cuenta</div><h2>Nueva inmersión</h2><div class="acc"><form data-f="signup">${fld('username','Nombre de buceador','text','nickname')}${fld('email','Correo','email','email')}${fld('password','Contraseña (mín. 8)','password','new-password')}<p class="msg"></p><button class="mi pri" type="submit"><i></i>Crear cuenta</button></form><nav class="menu">${mi('login','Ya tengo cuenta')}</nav></div>`,
