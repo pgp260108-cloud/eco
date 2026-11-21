@@ -168,6 +168,20 @@ body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibi
 @media (orientation:portrait) and (pointer:coarse) and (max-width:600px){#rot{display:flex}}
 @media (prefers-reduced-motion:reduce){#rot svg{animation:none;transform:rotate(-90deg)}}
 @media (max-height:460px){#hud{gap:4px;padding-top:6px;padding-bottom:6px}#hud #depth{font-size:20px}#hud .row{min-height:14px}.bar{width:84px}.card{gap:9px}.card h1{font-size:clamp(44px,9vw,72px)}.card p{font-size:13px;line-height:1.45}.mi{padding:6px 0}.mi.pri{padding:8px 0;font-size:20px}#tut{font-size:12px;padding:8px 10px;gap:4px}}
+/* ===== Cuentas ===== */
+.acc{display:grid;gap:14px}.acc form{display:grid;gap:16px}
+.fld{display:grid;gap:4px}
+.fld span{font:500 11px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.fld input{all:unset;box-sizing:border-box;width:100%;padding:9px 2px;font:400 16px var(--body);color:var(--fg);border-bottom:1px solid var(--line);transition:border-color .2s,box-shadow .2s;-webkit-user-select:text;user-select:text}
+.fld input:focus{border-color:var(--accent);box-shadow:0 1px 0 var(--accent)}
+.fld input::placeholder{color:rgba(111,144,153,.5)}
+.msg{min-height:1.3em;margin:0;font-size:13px;color:var(--warn)}.msg.ok{color:var(--air)}
+.mi:disabled{opacity:.45;pointer-events:none}
+.prof{display:grid;margin:0}
+.prof div{display:flex;justify-content:space-between;gap:18px;padding:9px 0;border-bottom:1px solid var(--line)}
+.prof dt{font:500 11px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--dim);align-self:center}
+.prof dd{margin:0;font:400 14px var(--mono);color:var(--fg);text-align:right;word-break:break-all}
+.lnk.w{color:var(--warn)}
 </style>
 <canvas id="c" aria-label="Cueva submarina a oscuras"></canvas><div id="tut" hidden></div><div id="vig"></div>
 <div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>Gira tu dispositivo<small>Eco Abisal se juega en horizontal. Pon el móvil apaisado para continuar.</small></div>
@@ -192,6 +206,11 @@ body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibi
 </div>
 <div id="overlay"><div class="card" id="card"></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* === SUPABASE: pega aquí la URL y la clave "anon public" de tu proyecto (Settings > API) === */
+const SUPABASE_URL='https://ncmxhbazzvossgstphgq.supabase.co',SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jbXhoYmF6enZvc3Nnc3RwaGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNTMzOTksImV4cCI6MjExMDgyOTM5OX0.LRkrr6__UnNzg9-IHJ0h74GOF59mPgwj8CktdJXLZQQ';
+</script>
 <script>
 (()=>{
 'use strict';
@@ -338,7 +357,7 @@ function decor(x,y,b){
 }
 const set={master:.8,music:.6,sfx:.9,calm:false};
 try{Object.assign(set,JSON.parse(localStorage.getItem('eco-set')||'{}'))}catch(e){}
-const saveSet=()=>{try{localStorage.setItem('eco-set',JSON.stringify(set))}catch(e){}};
+const saveSet=()=>{try{localStorage.setItem('eco-set',JSON.stringify(set))}catch(e){}cloudSave()};
 function applyVol(){if(!AC)return;const t=AC.currentTime;master.gain.setTargetAtTime(muted?0:set.master,t,.05);musB.gain.setTargetAtTime(set.music,t,.05);sfxB.gain.setTargetAtTime(set.sfx,t,.05)}
 function mkPan(v){if(!AC||!AC.createStereoPanner)return null;const n=AC.createStereoPanner();n.pan.value=v;return n}
 function initAudio(){
@@ -775,7 +794,7 @@ function updPlayer(dt){
 /* ---------- fin de partida ---------- */
 function die(msg){
   state='dead';
-  if(dive>best){best=dive;try{localStorage.setItem('eco-best',String(best))}catch(e){}}
+  if(dive>best){best=dive;try{localStorage.setItem('eco-best',String(best))}catch(e){}cloudSave()}
   tone({f0:220,f1:40,dur:1.2,type:'sawtooth',vol:.25});
   showOverlay('dead',msg);
 }
@@ -837,11 +856,12 @@ function render(kind,msg){
   let h='';
   if(view==='how')h=howHtml+mi('back','Volver','back');
   else if(view==='set')h=`<div class="sub">Ajustes</div><h2>Sonido y pantalla</h2><div class="set">${sl('master','Volumen general')}${sl('music','Música y ambiente')}${sl('sfx','Efectos')}</div><label class="chk"><input type="checkbox" data-k="calm" ${set.calm?'checked':''}>Reducir destellos y pulsos rojos</label><button class="lnk" type="button" data-act="clear">Borrar récord</button>${mi('back','Volver','back')}`;
-  else if(kind==='menu')h=`<h1>EC<span class="o">O</span></h1><p>Una cueva inundada, sin una gota de luz. Lanzas pulsos de sonar y la roca te devuelve su forma. Lo que vive aquí no ve, pero oye todo lo que haces.</p><nav class="menu" aria-label="Menú principal">${mi('play','Sumergirse','pri')}${mi('tut','Tutorial')}${mi('how','Cómo jugar')}${mi('set','Ajustes')}</nav>${best?`<div class="sub">Récord: ${best*30} m</div>`:''}`;
+  else if(AV[view])h=AV[view]();
+  else if(kind==='menu')h=`<h1>EC<span class="o">O</span></h1><p>Una cueva inundada, sin una gota de luz. Lanzas pulsos de sonar y la roca te devuelve su forma. Lo que vive aquí no ve, pero oye todo lo que haces.</p><nav class="menu" aria-label="Menú principal">${mi('play','Sumergirse','pri')}${mi('tut','Tutorial')}${mi('how','Cómo jugar')}${mi('set','Ajustes')}${mi(sb?(usr?'acct':'login'):'nocfg',usr&&prof?'Mi perfil':'Cuenta')}</nav>${(usr&&prof)||best?`<div class="sub">${usr&&prof?esc(prof.username)+(best?' · ':''):''}${best?'Récord: '+best*30+' m':''}</div>`:''}`;
   else if(kind==='pause')h=`<div class="sub">En pausa</div><h2>El agua sigue quieta</h2><nav class="menu">${mi('resume','Continuar','pri')}${mi('how','Cómo jugar')}${mi('set','Ajustes')}${mi('quit','Salir al menú')}</nav>`;
   else if(kind==='dead')h=`<div class="sub">Fin de la inmersión</div><h2>${msg}</h2><p>Llegaste a ${dive*30} m. Tu mejor marca es ${best*30} m.</p><nav class="menu">${mi('play','Volver a bajar','pri')}${mi('quit','Menú principal')}</nav>`;
   else if(kind==='tutend')h=`<div class="sub">Tutorial completado</div><h2>Ya sabes lo básico</h2><p>Cristales, medusas, biomas y las demás criaturas los irás encontrando al bajar. Tienes el resumen en «Cómo jugar».</p><nav class="menu">${mi('play','Sumergirse','pri')}${mi('tut','Repetir tutorial')}${mi('how','Cómo jugar')}${mi('quit','Menú principal')}</nav>`;
-  card.className=view==='how'?'card wide':'card';card.innerHTML=h;drawIcons();const f=card.querySelector('.mi');if(f)try{f.focus({preventScroll:true})}catch(e){}
+  card.className=view==='how'?'card wide':'card';card.innerHTML=h;drawIcons();const f=card.querySelector(matchMedia('(pointer:fine)').matches?'input:not([type=range]):not([type=checkbox]),.mi':'.mi');if(f)try{f.focus({preventScroll:true})}catch(e){}
 }
 function act(a,el){
   const k=overlay.dataset.kind;
@@ -850,12 +870,94 @@ function act(a,el){
   else if(a==='tut')startTutorial();
   else if(a==='resume')resume();
   else if(a==='quit'){uiTick();toMenu()}
-  else if(a==='clear'){best=0;try{localStorage.removeItem('eco-best')}catch(e){}uiTick();el.textContent='Récord borrado'}
+  else if(AV[a]){uiTick();view=a;render(k)}
+  else if(a==='logout')doLogout();
+  else if(a==='del')doDelete(el);
+  else if(a==='clear'){best=0;try{localStorage.removeItem('eco-best')}catch(e){}cloudSave();uiTick();el.textContent='Récord borrado'}
 }
 card.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act,b)});
 card.addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;
   if(t.type==='checkbox')set[k]=t.checked;else{set[k]=+t.value;t.previousElementSibling.textContent=Math.round(t.value*100)+'%';uiTick()}
   saveSet();applyVol()});
+/* ---------- cuentas (Supabase) ---------- */
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let sb=null,usr=null,prof=null,cloudT=0;
+if(SUPABASE_URL&&SUPABASE_KEY&&window.supabase){try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){}}
+function cloudSave(){if(!sb||!usr||!prof)return;clearTimeout(cloudT);cloudT=setTimeout(async()=>{try{await sb.from('profiles').update({best,settings:set}).eq('id',usr.id)}catch(e){}},700)}
+function refresh(){if(!overlay.hidden&&overlay.dataset.kind==='menu'&&(view==='main'||view==='acct'))render('menu')}
+async function loadProfile(){
+  const u=usr;if(!sb||!u)return;
+  try{
+    let {data}=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();
+    if(!data){const m=u.user_metadata||{};
+      ({data}=await sb.from('profiles').insert({id:u.id,username:String(m.username||String(u.email).split('@')[0]).padEnd(3,'_').slice(0,20),best,settings:set}).select().single())}
+    if(!data||!usr||usr.id!==u.id)return;
+    prof=data;
+    if(data.settings&&Object.keys(data.settings).length)Object.assign(set,data.settings);
+    if(best>data.best)cloudSave();else best=data.best;
+    try{localStorage.setItem('eco-set',JSON.stringify(set));localStorage.setItem('eco-best',String(best))}catch(e){}
+    applyVol();refresh();
+  }catch(e){}
+}
+function wipeLocal(){best=0;Object.assign(set,{master:.8,music:.6,sfx:.9,calm:false});try{localStorage.removeItem('eco-best');localStorage.removeItem('eco-set')}catch(e){}applyVol()}
+async function endSession(){clearTimeout(cloudT);try{await sb.auth.signOut()}catch(e){}usr=prof=null;wipeLocal();view='main';render('menu')}
+async function doLogout(){uiTick();if(prof){try{await sb.from('profiles').update({best,settings:set}).eq('id',usr.id)}catch(e){}}endSession()}
+async function doDelete(el){
+  if(!el.dataset.c){el.dataset.c=1;el.textContent='Pulsa otra vez: se borrará para siempre';return}
+  const {error}=await sb.rpc('delete_my_account');
+  if(error){delete el.dataset.c;el.textContent='No se pudo eliminar. Inténtalo de nuevo';return}
+  endSession();
+}
+const eTxt=e=>{const m=String(e&&e.message||e);return /invalid login/i.test(m)?'Correo o contraseña incorrectos.':/not confirmed/i.test(m)?'Confirma primero tu correo.':/already registered/i.test(m)?'Ya existe una cuenta con ese correo.':/rate limit|too many/i.test(m)?'Demasiados intentos. Espera un poco.':/network|fetch/i.test(m)?'Sin conexión con el servidor.':/same password|different from the old/i.test(m)?'La contraseña nueva debe ser distinta.':/password/i.test(m)?'Contraseña no válida (mínimo 8 caracteres).':'No se pudo completar. Inténtalo de nuevo.'};
+const note=t=>{const m=card.querySelector('.msg');if(m){m.textContent=t;m.className='msg ok'}};
+const fld=(n,l,t,ac,v)=>`<label class="fld"><span>${l}</span><input name="${n}" type="${t}" autocomplete="${ac}" ${v?`value="${esc(v)}"`:''} required></label>`;
+const nm=()=>prof?prof.username:(usr&&usr.user_metadata&&usr.user_metadata.username)||'Buceador';
+const AV={
+  nocfg:()=>`<div class="sub">Cuenta</div><h2>Cuentas no disponibles</h2><p>${SUPABASE_URL&&SUPABASE_KEY?'No se pudo cargar el servicio de cuentas. Comprueba tu conexión y recarga la página.':'Falta configurar Supabase: pon tu URL y tu clave anon en SUPABASE_URL y SUPABASE_KEY, al inicio del script.'}</p>${mi('back','Volver','back')}`,
+  login:()=>`<div class="sub">Cuenta</div><h2>Identifícate</h2><p>Guarda tus ajustes y tu récord de profundidad y llévalos a cualquier dispositivo.</p><div class="acc"><form data-f="login">${fld('email','Correo','email','email')}${fld('password','Contraseña','password','current-password')}<p class="msg"></p><button class="mi pri" type="submit"><i></i>Entrar</button></form><nav class="menu">${mi('signup','Crear una cuenta')}${mi('forgot','Olvidé mi contraseña')}</nav></div>${mi('back','Volver','back')}`,
+  signup:()=>`<div class="sub">Cuenta</div><h2>Nueva inmersión</h2><div class="acc"><form data-f="signup">${fld('username','Nombre de buceador','text','nickname')}${fld('email','Correo','email','email')}${fld('password','Contraseña (mín. 8)','password','new-password')}<p class="msg"></p><button class="mi pri" type="submit"><i></i>Crear cuenta</button></form><nav class="menu">${mi('login','Ya tengo cuenta')}</nav></div>`,
+  forgot:()=>`<div class="sub">Cuenta</div><h2>Recuperar acceso</h2><p>Te enviaremos un enlace para elegir una contraseña nueva.</p><div class="acc"><form data-f="forgot">${fld('email','Correo','email','email')}<p class="msg"></p><button class="mi pri" type="submit"><i></i>Enviar enlace</button></form></div>${mi('login','Volver','back')}`,
+  pass:()=>`<div class="sub">Cuenta</div><h2>Nueva contraseña</h2><div class="acc"><form data-f="pass">${fld('password','Nueva contraseña (mín. 8)','password','new-password')}${fld('again','Repítela','password','new-password')}<p class="msg"></p><button class="mi pri" type="submit"><i></i>Guardar</button></form></div>${mi('acct','Volver','back')}`,
+  acct:()=>`<div class="sub">Perfil</div><h2>${esc(nm())}</h2><dl class="prof"><div><dt>Correo</dt><dd>${esc(usr?usr.email:'')}</dd></div><div><dt>Récord</dt><dd>${best?best*30+' m':'—'}</dd></div><div><dt>Buceando desde</dt><dd>${usr?new Date(usr.created_at).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}):''}</dd></div></dl><div class="acc"><form data-f="name">${fld('username','Nombre de buceador','text','nickname',nm())}<p class="msg"></p><button class="mi" type="submit"><i></i>Guardar nombre</button></form><nav class="menu">${mi('pass','Cambiar contraseña')}${mi('logout','Cerrar sesión')}</nav><button class="lnk w" type="button" data-act="del">Eliminar cuenta</button></div>${mi('back','Volver','back')}`
+};
+card.addEventListener('submit',async e=>{
+  e.preventDefault();if(!sb)return;
+  const f=e.target,d=Object.fromEntries(new FormData(f)),m=f.querySelector('.msg'),b=f.querySelector('[type=submit]'),em=(d.email||'').trim(),n=(d.username||'').trim();
+  const say=(t,ok)=>{m.textContent=t;m.className='msg'+(ok?' ok':'')};
+  b.disabled=true;say('');
+  try{
+    switch(f.dataset.f){
+      case'login':{const {data,error}=await sb.auth.signInWithPassword({email:em,password:d.password});if(error)throw error;usr=data.user;await loadProfile();uiOk();view='acct';render('menu');break}
+      case'signup':{
+        if(n.length<3||n.length>20)return say('El nombre debe tener entre 3 y 20 caracteres.');
+        if(d.password.length<8)return say('La contraseña necesita al menos 8 caracteres.');
+        const {data,error}=await sb.auth.signUp({email:em,password:d.password,options:{data:{username:n},emailRedirectTo:location.href.split('#')[0]}});
+        if(error)throw error;
+        if(data.user&&data.user.identities&&!data.user.identities.length)throw new Error('already registered');
+        uiOk();
+        if(data.session){usr=data.user;await loadProfile();view='acct';render('menu')}
+        else say('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión.',1);
+        break}
+      case'forgot':{const {error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.href.split('#')[0]});if(error)throw error;uiOk();say('Si ese correo tiene cuenta, recibirás un enlace para restablecer la contraseña.',1);break}
+      case'name':{
+        if(n.length<3||n.length>20)return say('El nombre debe tener entre 3 y 20 caracteres.');
+        const {error}=await sb.from('profiles').update({username:n}).eq('id',usr.id);if(error)throw error;
+        if(prof)prof.username=n;uiOk();render('menu');note('Nombre actualizado.');break}
+      case'pass':{
+        if(d.password.length<8)return say('La contraseña necesita al menos 8 caracteres.');
+        if(d.password!==d.again)return say('Las contraseñas no coinciden.');
+        const {error}=await sb.auth.updateUser({password:d.password});if(error)throw error;
+        uiOk();view='acct';render('menu');note('Contraseña actualizada.');break}
+    }
+  }catch(x){say(eTxt(x))}
+  finally{b.disabled=false}
+});
+if(sb)sb.auth.onAuthStateChange((ev,ss)=>{
+  usr=ss?ss.user:null;
+  if(!usr){prof=null;return}
+  if(ev==='PASSWORD_RECOVERY')setTimeout(()=>{if(state==='menu'){view='pass';render('menu')}},0);
+  if(!prof||prof.id!==usr.id)setTimeout(loadProfile,0);
+});
 function toMenu(){tut=null;state='menu';level=1;dive=1;fear=0;creatures=[];pickups=[];crystals=[];jellies=[];exit={x:-99,y:-99,known:false};pings=[];echoes=[];blips=[];bub.length=0;palette();menuScene();showOverlay('menu')}
 let pausedFrom=null;
 function pause(){if(state==='play'||state==='intro'){pausedFrom=state;state='pause';showOverlay('pause')}}
@@ -875,6 +977,7 @@ function updHud(){
 
 /* ---------- entrada ---------- */
 window.addEventListener('keydown',e=>{
+  const tg=e.target;if(tg&&tg.tagName==='INPUT'&&tg.type!=='range'&&tg.type!=='checkbox'){if(e.code==='Escape'&&view!=='main')act('back');return}
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)&&!(e.target.type==='range'||e.target.type==='checkbox'))e.preventDefault();
   if(e.repeat)return;
   keys[e.code]=true;
