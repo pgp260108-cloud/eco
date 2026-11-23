@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Eco Abisal</title>
+<title>Eco</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,10 +29,11 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:va
 #hp span.off{background:rgba(95,227,240,.14)}
 #tools{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:8px}
 #tools button{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);background:var(--panel);border:1px solid var(--line);padding:7px 10px;cursor:pointer}
-#tools button:hover,#tools button:focus-visible{color:var(--fg);border-color:var(--accent);outline:none}
+@media (hover:hover) and (pointer:fine){#tools button:hover{color:var(--fg);border-color:var(--accent)}.btn:hover{background:var(--fg)}.mi:hover{color:var(--fg);padding-left:6px}.mi:hover i{opacity:1;transform:scale(1)}.lnk:hover{color:var(--fg)}}
+#tools button:focus-visible{color:var(--fg);border-color:var(--accent);outline:none}
 #toast{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);text-align:center;font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg);pointer-events:none;opacity:0;transition:opacity .4s}
 #toast.on{opacity:1}
-#banner{position:fixed;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none;opacity:0}
+#banner{position:fixed;inset:0;display:grid;place-content:start center;padding-top:calc(env(safe-area-inset-top,0px) + 74px);text-align:center;pointer-events:none;opacity:0}
 #banner.on{animation:bn 2s ease both}
 #banner small{display:block;font:400 11px var(--mono);letter-spacing:.4em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
 #banner strong{font:300 clamp(40px,10vw,88px)/1 var(--display);letter-spacing:.04em;color:var(--fg)}
@@ -51,7 +52,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:va
 .legend span{display:inline-flex;align-items:center;gap:7px}.legend .ico{position:static;inset:auto;display:block;width:30px;height:30px;flex:none;background:none}
 .dot{width:10px;height:10px;display:inline-block}
 .btn{justify-self:start;font:500 12px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--bg);background:var(--accent);border:0;padding:13px 22px;cursor:pointer}
-.btn:hover,.btn:focus-visible{background:var(--fg);outline:none}
+.btn:focus-visible{background:var(--fg);outline:none}
 #touch{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);width:var(--c);height:var(--c);display:none;pointer-events:none}
 #touch button{position:absolute;pointer-events:auto;display:grid;place-content:center;justify-items:center;gap:3px;padding:0;border-radius:50%;color:var(--accent);--g:95,227,240;border:1.5px solid rgba(var(--g),.5);background:radial-gradient(circle at 50% 36%,rgba(var(--g),.22),rgba(4,12,17,.85) 72%);box-shadow:0 0 16px rgba(var(--g),.14),inset 0 0 12px rgba(var(--g),.1);font:500 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;touch-action:none;-webkit-tap-highlight-color:transparent;transition:transform .12s,box-shadow .2s,background .2s}
 #touch button svg{width:calc(var(--c)*.15);height:calc(var(--c)*.15);fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -66,7 +67,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:va
 #tSneak{width:33%;height:33%;left:56%;top:8%;color:#c9b0ff;--g:201,176,255}
 #touch button.on{background:radial-gradient(circle at 50% 36%,rgba(var(--g),.55),rgba(4,12,17,.8) 78%);border-color:rgba(var(--g),.95);box-shadow:0 0 22px rgba(var(--g),.45),inset 0 0 14px rgba(var(--g),.3)}
 :root{--c:min(212px,46vh,58vw)}
-@media (pointer:coarse){#touch{display:block}#toast{bottom:calc(env(safe-area-inset-bottom,0px) + var(--c) + 30px)}}
+@media (pointer:coarse){#touch{display:block}#toast{bottom:calc(env(safe-area-inset-bottom,0px) + 20px);right:calc(var(--c) + 36px);left:max(16px,env(safe-area-inset-left,0px));padding:0}}
 @media (max-height:460px){#touch button span{display:none}}
 /* Botones táctiles: solo visibles durante la partida (play/intro); ocultos en menús, pausa, fin y victoria */
 body:not([data-s=play]):not([data-s=intro]) #touch{display:none!important}
@@ -76,7 +77,8 @@ body:not([data-s=play]):not([data-s=intro]) #touch{display:none!important}
 
 /* ===== v2: menú, HUD y atmósfera ===== */
 #vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 42%,rgba(0,0,0,.6) 100%)}
-body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibility:hidden}
+body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause,body[data-s=menu] #bMute,body[data-s=dead] #banner,body[data-s=dead] #toast,body[data-s=dead] #spec,body[data-s=dead] #team,body[data-s=win] #banner,body[data-s=win] #toast,body[data-s=win] #spec,body[data-s=win] #team{visibility:hidden}
+*{-webkit-tap-highlight-color:transparent}.btn:active,.mi:active{opacity:.7}
 #hud{gap:9px;padding:12px 22px 12px max(16px,env(safe-area-inset-left,0px));background:linear-gradient(90deg,rgba(2,8,12,.72),transparent);font:12px var(--body);text-transform:none;letter-spacing:.02em}
 #hud .lab{width:78px}
 #hud .row:first-child{align-items:baseline}
@@ -106,8 +108,8 @@ body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibi
 .mi{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:16px;padding:11px 0;font:400 17px var(--display);letter-spacing:.03em;color:var(--dim);transition:color .2s,padding-left .25s}
 .mi.pri{font-size:24px;color:var(--fg);padding:14px 0}
 .mi i{flex:none;width:12px;height:12px;border:1.5px solid var(--accent);border-radius:50%;opacity:0;transform:scale(.3);transition:opacity .25s,transform .3s}
-.mi:hover,.mi:focus-visible{color:var(--fg);padding-left:6px}
-.mi:hover i,.mi:focus-visible i{opacity:1;transform:scale(1)}
+.mi:focus-visible{color:var(--fg);padding-left:6px}
+.mi:focus-visible i{opacity:1;transform:scale(1)}
 .mi.back{font-size:15px;margin-top:6px}
 .set{display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center;font-size:14px}
 .set output{font:400 12px var(--mono);color:var(--dim)}
@@ -115,7 +117,7 @@ body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibi
 .chk{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer}
 .chk input{accent-color:var(--accent);width:18px;height:18px;margin:0}
 .lnk{all:unset;cursor:pointer;justify-self:start;color:var(--dim);font-size:13px;text-decoration:underline}
-.lnk:hover,.lnk:focus-visible{color:var(--fg)}
+.lnk:focus-visible{color:var(--fg)}
 .card.wide{max-width:780px;width:min(780px,100%)}
 .how{display:grid;gap:26px}
 .how .lead{font-size:15px;color:var(--dim);max-width:58ch}
@@ -194,7 +196,7 @@ body[data-s=menu] #hud,body[data-s=menu] #toast,body[data-s=menu] #bPause{visibi
 .lb li.me .nm{color:var(--fg);font-weight:600}
 .lb li.gap{display:block;padding:2px 6px;text-align:center;color:var(--dim);border-bottom:0;letter-spacing:.4em}
 .lbn{margin:0;font-size:13px;color:var(--dim)}
-#touch #tAlert{display:none;width:27%;height:27%;left:72%;top:64%;color:#ffbe50;--g:255,190,80}
+#touch #tAlert{display:none;width:24%;height:24%;left:76%;top:-22%;color:#ffbe50;--g:255,190,80}
 body[data-coop] #touch #tAlert{display:grid}
 #team{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;max-width:46vw;pointer-events:none;font:11px var(--mono);letter-spacing:.04em;color:var(--dim)}
 #team .tm{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -202,13 +204,14 @@ body[data-coop] #touch #tAlert{display:grid}
 #team .tm b{font-weight:500;color:var(--warn)}
 #team .tm.x{opacity:.45}#team .tm.d i{background:var(--warn);box-shadow:0 0 8px var(--warn)}
 #team .tm.gate{color:var(--accent)}#team .tm.gate.on{color:var(--gold)}
-#spec{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 62px);text-align:center;pointer-events:none;font:500 15px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg);text-shadow:0 0 12px rgba(0,0,0,.9)}
+#spec{position:fixed;left:50%;transform:translateX(-50%);width:min(60vw,560px);top:calc(env(safe-area-inset-top,0px) + 62px);text-align:center;pointer-events:none;font:500 15px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg);text-shadow:0 0 12px rgba(0,0,0,.9)}
 #spec small{display:block;margin-top:6px;font:11px var(--body);letter-spacing:.04em;text-transform:none;color:var(--dim)}
 .card h2.code{letter-spacing:.35em;font-family:var(--mono)}
-@media (max-width:760px){#team{max-width:60vw}}
+@media (max-width:760px){#team{max-width:56vw}#spec{font-size:12px}}
+@media (max-height:460px){#team{font-size:10px;gap:3px 10px}#spec{top:calc(env(safe-area-inset-top,0px) + 44px)}#banner{padding-top:56px}}
 </style>
 <canvas id="c" aria-label="Cueva submarina a oscuras"></canvas><div id="tut" hidden></div><div id="vig"></div>
-<div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>Gira tu dispositivo<small>Eco Abisal se juega en horizontal. Pon el móvil apaisado para continuar.</small></div>
+<div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>Gira tu dispositivo<small>Eco se juega en horizontal. Pon el móvil apaisado para continuar.</small></div>
 
 <div id="hud">
   <div class="row"><span class="lab">Profundidad</span><b id="depth">30 m</b></div>
@@ -546,7 +549,7 @@ function startLevel(keepAir){
     if(level>=3)pickups.push({...pick(near,8,pickups),known:false,kind:'h'});
     const nCr=level<4?0:level<9?2:3;crystals=[];cNext=0;
     for(let k=0;k<nCr;k++){const c=pick(near,9,crystals.concat([exit]));crystals.push({x:c.x,y:c.y,n:k+1,known:false,done:false,cd:0})}
-    const nJe=level<6?0:Math.min(3,Math.floor(level/4));jellies=[];
+    const nJe=coop||level<6?0:Math.min(3,Math.floor(level/4));jellies=[];
     for(let k=0;k<nJe;k++){const c=pick(near,7,jellies);{const a0=rnd()*6.28;jellies.push({x:c.x,y:c.y,hx:c.x,hy:c.y,a:a0,a0,known:false,seen:-99})}}
     if(level>=2)for(let k=0;k<(level>=6?2:1);k++){const c=pick(near,6,pickups);pickups.push({x:c.x,y:c.y,known:false,kind:'d'})}
     if(coop)coopGen(pick,near,far);else{btns=[];twins=[];gate={open:true,on:0,req:0}}
@@ -944,6 +947,7 @@ ${it('e','Eco de equipo','Revela la roca alrededor de donde lo cogiste, para tod
 <div class="step"><b>Solo se pasa de nivel</b>cuando todos los que siguen vivos han llegado al faro. Verás a tus compañeros únicamente cuando tu eco los alcance. Las partidas cooperativas no cuentan para la clasificación.</div></div></section>
 <p class="tip">Todo lo que haces suena. Nadar rápido y los pings fuertes atraen a las criaturas; el sigilo te hace casi invisible.</p>
 </div>`;
+let usedKey=false;
 const mi=(a,t,c)=>`<button class="mi ${c||''}" type="button" data-act="${a}"><i></i>${t}</button>`;
 const sl=(k,t)=>`<label for="v-${k}">${t}</label><output>${Math.round(set[k]*100)}%</output><input id="v-${k}" data-k="${k}" type="range" min="0" max="1" step=".05" value="${set[k]}">`;
 let deadMsg='';
@@ -954,12 +958,12 @@ function render(kind,msg){
   if(view==='how')h=howHtml+mi('back','Volver','back');
   else if(view==='set')h=`<div class="sub">Ajustes</div><h2>Sonido y pantalla</h2><div class="set">${sl('master','Volumen general')}${sl('music','Música y ambiente')}${sl('sfx','Efectos')}</div><label class="chk"><input type="checkbox" data-k="calm" ${set.calm?'checked':''}>Reducir destellos y pulsos rojos</label><button class="lnk" type="button" data-act="clear">Borrar récord</button>${mi('back','Volver','back')}`;
   else if(AV[view])h=AV[view]();
-  else if(kind==='menu')h=`<h1>EC<span class="o">O</span></h1><p>Una cueva inundada, sin una gota de luz. Lanzas pulsos de sonar y la roca te devuelve su forma. Lo que vive aquí no ve, pero oye todo lo que haces.</p><nav class="menu" aria-label="Menú principal">${mi('play','Sumergirse','pri')}${mi('tut','Tutorial')}${mi('how','Cómo jugar')}${sb?mi('rank','Clasificación'):''}${mi('set','Ajustes')}${mi(sb?(usr?'acct':'login'):'nocfg',usr&&prof?'Mi perfil':'Cuenta')}</nav>${(usr&&prof)||best?`<div class="sub">${usr&&prof?esc(prof.username)+(best?' · ':''):''}${best?'Récord: '+best*30+' m':''}</div>`:''}`;
+  else if(kind==='menu')h=`<h1>EC<span class="o">O</span></h1><nav class="menu" aria-label="Menú principal">${mi('play','Sumergirse','pri')}${mi('tut','Tutorial')}${mi('how','Cómo jugar')}${sb?mi('rank','Clasificación'):''}${mi('set','Ajustes')}${mi(sb?(usr?'acct':'login'):'nocfg',usr&&prof?'Mi perfil':'Cuenta')}</nav>${(usr&&prof)||best?`<div class="sub">${usr&&prof?esc(prof.username)+(best?' · ':''):''}${best?'Récord: '+best*30+' m':''}</div>`:''}`;
   else if(kind==='pause')h=`<div class="sub">En pausa</div><h2>${coop?'Tus compañeros siguen nadando':'El agua sigue quieta'}</h2><nav class="menu">${mi('resume','Continuar','pri')}${mi('how','Cómo jugar')}${mi('set','Ajustes')}${mi('quit','Salir al menú')}</nav>`;
   else if(kind==='dead')h=`<div class="sub">Fin de la inmersión</div><h2>${msg}</h2><p>Llegaste a ${dive*30} m. Tu mejor marca es ${best*30} m.</p><nav class="menu">${mi('solo','Volver a bajar','pri')}${sb?mi('rank','Clasificación'):''}${mi('quit','Menú principal')}</nav>`;
   else if(kind==='tutend')h=`<div class="sub">Tutorial completado</div><h2>Ya sabes lo básico</h2><p>Cristales, medusas, biomas y las demás criaturas los irás encontrando al bajar. Tienes el resumen en «Cómo jugar».</p><nav class="menu">${mi('play','Sumergirse','pri')}${mi('tut','Repetir tutorial')}${mi('how','Cómo jugar')}${mi('quit','Menú principal')}</nav>`;
   if(kind==='dead'&&lastCoop&&!AV[view]&&view!=='how'&&view!=='set')h=`<div class="sub">Fin de la inmersión</div><h2>${msg}</h2><p>El equipo llegó a ${dive*30} m. Las partidas cooperativas no cuentan para tu récord ni para la clasificación.</p><nav class="menu">${mi('quit','Menú principal','pri')}</nav>`;
-  card.className=view==='how'?'card wide':'card';card.innerHTML=h;drawIcons();if(view==='rank')loadRank();const f=card.querySelector(matchMedia('(pointer:fine)').matches?'input:not([type=range]):not([type=checkbox]),.mi':'.mi');if(f)try{f.focus({preventScroll:true})}catch(e){}
+  card.className=view==='how'?'card wide':'card';card.innerHTML=h;drawIcons();if(view==='rank')loadRank();const f=card.querySelector((matchMedia('(pointer:fine)').matches?'input:not([type=range]):not([type=checkbox])'+(usedKey?',.mi':''):(usedKey?'.mi':'.nope')));if(f)try{f.focus({preventScroll:true})}catch(e){}
 }
 function act(a,el){
   const k=overlay.dataset.kind;
@@ -1116,7 +1120,7 @@ window.addEventListener('keydown',e=>{
   const open=!overlay.hidden,ae=document.activeElement;
   if(open&&['ArrowDown','ArrowUp','KeyS','KeyW'].includes(e.code)&&!(ae&&ae.type==='range')){
     const L=[...card.querySelectorAll('.mi,.lnk')],d=(e.code==='ArrowDown'||e.code==='KeyS')?1:-1;
-    if(L.length){L[(L.indexOf(ae)+d+L.length)%L.length].focus();uiTick()}}
+    if(L.length){const i=L.indexOf(ae);L[i<0?(d>0?0:L.length-1):(i+d+L.length)%L.length].focus();uiTick()}}
   else if(open&&(e.code==='Space'||e.code==='Enter')){
     if(ae&&ae.tagName==='BUTTON'){e.preventDefault();ae.click()}
     else if(!(ae&&ae.tagName==='INPUT')){const f=card.querySelector('.mi');if(f)f.click()}}
@@ -1135,6 +1139,10 @@ const portMQ=matchMedia('(orientation:portrait) and (pointer:coarse) and (max-wi
 if(portMQ.addEventListener)portMQ.addEventListener('change',onPort);else portMQ.addListener(onPort);
 const lockLand=()=>{try{const o=screen.orientation;if(o&&o.lock)o.lock('landscape').catch(()=>{})}catch(e){}};
 let fsTried=false;
+window.addEventListener('keydown',()=>{usedKey=true},true);
+window.addEventListener('pointerdown',()=>{usedKey=false},true);
+window.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const a=document.activeElement;if(a&&a.matches&&a.matches('.mi,.lnk')&&!a.matches(':hover'))a.blur()});
+window.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse'){const a=document.activeElement;if(a&&a.matches&&a.matches('.mi,.lnk'))a.blur()}});
 window.addEventListener('pointerup',()=>{if(fsTried||!matchMedia('(pointer:coarse)').matches)return;fsTried=true;try{const r=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen({navigationUI:'hide'});if(r&&r.then)r.then(lockLand,()=>{});else lockLand()}catch(e){}});
 cv.addEventListener('mousedown',e=>{if(e.pointerType==='touch')return;if(coop&&my.s==='x'){specNext(1);return}if(e.button===0)firePing(0);else if(e.button===2)firePing(1)});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
